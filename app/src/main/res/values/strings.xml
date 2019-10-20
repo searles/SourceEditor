@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">SourceEditor</string>
+    <string name="saveLabel">Save</string>
+</resources>
