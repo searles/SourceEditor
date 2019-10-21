@@ -1,12 +1,22 @@
 package at.searles.sourceeditor
 
-import android.app.AlertDialog
 import android.app.Dialog
-import android.app.DialogFragment
+import androidx.fragment.app.DialogFragment
+import androidx.appcompat.app.AlertDialog
 import android.os.Bundle
-import at.searles.storage.Saveable
 
 class ReplaceExistingDialogFragment : DialogFragment() {
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return AlertDialog.Builder(activity!!)
+                .setTitle("Entry already exists")
+                .setMessage("Do you want to replace the existing entry?")
+                .setNegativeButton(android.R.string.no) { _, _ -> }
+                .setPositiveButton(android.R.string.yes) { _, _ ->
+                    // FIXME (activity as Saveable).save(arguments.getString(KEY_LABEL)!!)
+                }
+                .create()
+    }
 
     companion object {
         val KEY_LABEL = "key"
@@ -18,16 +28,5 @@ class ReplaceExistingDialogFragment : DialogFragment() {
                 it.arguments = args
             }
         }
-    }
-
-    override fun onCreateDialog(savedInstanceState: Bundle): Dialog {
-        return AlertDialog.Builder(activity)
-                .setTitle("Entry already exists")
-                .setMessage("Do you want to replace the existing entry?")
-                .setNegativeButton(android.R.string.no) { _, _ -> }
-                .setPositiveButton(android.R.string.yes) { _, _ ->
-                    (activity as Saveable).save(arguments.getString(KEY_LABEL)!!)
-                }
-                .create()
     }
 }

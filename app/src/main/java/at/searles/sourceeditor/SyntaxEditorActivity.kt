@@ -1,14 +1,17 @@
 package at.searles.sourceeditor
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import at.searles.storage.MapStorageFragment
-import at.searles.storage.StorageFragment
+import at.searles.android.storage.StorageActivity
 
 
 class SyntaxEditorActivity : Activity() {
@@ -17,8 +20,7 @@ class SyntaxEditorActivity : Activity() {
      */
     private lateinit var editor: EditText
     private lateinit var syntaxUpdater: DelayedUpdater
-    private lateinit var storageFragment: StorageFragment<String>
-    private var currentKey: String? = null // if null, there is no current key
+    private var currentName: String? = null // if null, there is no current key
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,28 +31,35 @@ class SyntaxEditorActivity : Activity() {
 
         // init current key
         if(savedInstanceState != null) {
-            currentKey = savedInstanceState.getString(CURRENT_KEY)
+            currentName = savedInstanceState.getString(currentName)
         }
+    }
 
-        // init storage framework
-        storageFragment =
-                fragmentManager.findFragmentByTag(STORAGE_FRAGMENT_TAG) as StorageFragment<String>? ?:
-                        MapStorageFragment().also {
-                            fragmentManager.beginTransaction().add(storageFragment, STORAGE_FRAGMENT_TAG).commit()
-                        }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
 
-        val saveButton: Button = findViewById(R.id.saveButton)
-
-        saveButton.setOnClickListener {
-            onSaveButtonClicked()
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId) {
+            R.id.open_storage_manager -> {
+                Intent(this, StorageActivity::class.java).also {
+                    // FIXME!
+                    it.putExtra(StorageActivity.providerClassNameKey, DemoProvider::class.java)
+                    startActivityForResult(it, openNameId)
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        if(currentKey != null) {
-            outState.putString(CURRENT_KEY, currentKey)
+        if(currentName != null) {
+            outState.putString(currentName, currentName)
         }
     }
 
@@ -59,11 +68,18 @@ class SyntaxEditorActivity : Activity() {
         super.onDestroy()
     }
 
+    fun onOpenButtonClicked(view: View) {
+        Intent(this, StorageActivity::class.java).also {
+            // FIXME!
+            it.putExtra(StorageActivity.providerClassNameKey, DemoProvider::class.java.canonicalName)
+            startActivityForResult(it, openNameId)
+        }
+    }
 
-    private fun onSaveButtonClicked() {
-        val key = findViewById<EditText>(R.id.keyEditText).text.toString()
+    fun onSaveButtonClicked(view: View) {
+        val name = findViewById<EditText>(R.id.nameEditText).text.toString()
 
-        if(currentKey != key && storageFragment.keyExists(key)) {
+        /* FIXME if(currentName != key && storageFragment.keyExists(key)) {
             // The dialog will call the save-method
             val ft = fragmentManager.beginTransaction()
             // Create and show the dialog.
@@ -72,13 +88,12 @@ class SyntaxEditorActivity : Activity() {
         } else {
             // call save directly.
             save(key)
-        }
+        }*/
     }
 
-    fun save(key: String) {
-        require(storageFragment.isValid(key)) { "invalid key! Please check this before" }
+    fun save(name: String) {
+        // FIXME
         val sourceCode = editor.text.toString()
-        storageFragment.save(key, sourceCode)
     }
 
     private fun initSyntaxUpdater() {
@@ -107,8 +122,8 @@ class SyntaxEditorActivity : Activity() {
     }
 
     companion object {
-        private val STORAGE_FRAGMENT_TAG = "sourceStorage"
-        private val CURRENT_KEY = "currentKey"
+        private const val currentName = "currentName"
+        private const val openNameId = 146
         private val REPLACE_EXISTING_TAG = "replaceExisting"
     }
 }
