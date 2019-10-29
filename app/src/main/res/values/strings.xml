@@ -2,4 +2,6 @@
     <string name="app_name">SourceEditor</string>
     <string name="saveLabel">Save</string>
     <string name="open">Open</string>
+    <string name="filename">Filename</string>
+    <string name="editor">Editor</string>
 </resources>

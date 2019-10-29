@@ -34,7 +34,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.github.searles:meelanlang:01670b40d2ad6393cd13527e89425c04cbc830d3'
     implementation 'com.github.searles:parsing:1.9.2'
-    implementation 'com.github.searles:storage:0.0.3'
+    implementation 'com.github.searles:storage:0.1.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.github.bumptech.glide:glide:4.10.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'

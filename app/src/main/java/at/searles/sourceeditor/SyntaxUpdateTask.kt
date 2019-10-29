@@ -12,6 +12,9 @@ import at.searles.parsing.ParserLookaheadException
 import at.searles.parsing.ParserStream
 
 class SyntaxUpdateTask(private val editor: EditText, private val textWatcher: TextWatcher) : Runnable {
+
+    private val resources = editor.context.resources
+
     override fun run() {
         Log.d("SyntaxUpdateTask", "updating syntax")
 
@@ -62,6 +65,10 @@ class SyntaxUpdateTask(private val editor: EditText, private val textWatcher: Te
         }
     }
 
+    private fun color(resourceId: Int): Int {
+        return resources.getColor(resourceId, null)
+    }
+
     private fun clearHighlights() {
         Log.d("SyntaxUpdateTask", "removing all spans")
 
@@ -89,20 +96,20 @@ class SyntaxUpdateTask(private val editor: EditText, private val textWatcher: Te
     }
 
     private fun string(start: Int, end: Int) {
-        editor.editableText.setSpan(ForegroundColorSpan(Color.BLUE), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        editor.editableText.setSpan(ForegroundColorSpan(color(R.color.blueTextColor)), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
 
     private fun value(start: Int, end: Int) {
-        editor.editableText.setSpan(ForegroundColorSpan(Color.BLUE), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        editor.editableText.setSpan(ForegroundColorSpan(color(R.color.blueTextColor)), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
 
     private fun keyword(start: Int, end: Int) {
-        editor.editableText.setSpan(ForegroundColorSpan(Color.RED), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        editor.editableText.setSpan(ForegroundColorSpan(color(R.color.orangeTextColor)), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         editor.editableText.setSpan(StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
 
     private fun definition(start: Int, end: Int) {
-        editor.editableText.setSpan(ForegroundColorSpan(Color.MAGENTA), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        editor.editableText.setSpan(ForegroundColorSpan(color(R.color.magentaTextColor)), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         editor.editableText.setSpan(StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
 
@@ -111,7 +118,6 @@ class SyntaxUpdateTask(private val editor: EditText, private val textWatcher: Te
     }
 
     private fun comment(start: Int, end: Int) {
-        editor.editableText.setSpan(ForegroundColorSpan(Color.GRAY), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         editor.editableText.setSpan(StyleSpan(Typeface.ITALIC), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
 }
