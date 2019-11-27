@@ -18,14 +18,23 @@ import at.searles.android.storage.dialog.ReplaceExistingDialogFragment
 
 class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.Callback, DiscardAndOpenDialogFragment.Callback {
 
-    private lateinit var editor: EditText
+    private val editor: EditText by lazy {
+        findViewById<EditText>(R.id.sourceEditText)
+    }
+
+    private val nameEditText: EditText by lazy {
+        findViewById<EditText>(R.id.nameEditText)
+    }
+
+    private val saveButton: Button by lazy {
+        findViewById<Button>(R.id.saveButton)
+    }
+
     private lateinit var syntaxUpdater: DelayedUpdater
 
     private var currentName: String? = null // if null, there is no current key
     private var isModified = false
 
-    private lateinit var nameEditText: EditText
-    private lateinit var saveButton: Button
     private lateinit var provider: SourceFilesProvider
 
 
@@ -38,11 +47,6 @@ class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.
             currentName = savedInstanceState.getString(currentNameKey)
             isModified = savedInstanceState.getBoolean(isModifiedKey)
         }
-
-        editor = findViewById(R.id.sourceEditText)!!
-
-        nameEditText = findViewById(R.id.nameEditText)
-        saveButton = findViewById(R.id.saveButton)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

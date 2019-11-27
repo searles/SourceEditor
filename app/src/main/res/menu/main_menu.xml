@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:title="@string/open" app:showAsAction="ifRoom" android:id="@+id/open_storage_manager"/>
+    <item
+        android:id="@+id/open_storage_manager"
+        android:title="@string/open"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/compile"
+        android:title="Compile" />
+    <item
+        android:id="@+id/format"
+        android:title="Format" />
+    <item
+        android:id="@+id/return"
+        android:title="Return" />
 </menu>
