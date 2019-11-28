@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import at.searles.android.storage.StorageActivity
 import at.searles.android.storage.dialog.DiscardAndOpenDialogFragment
 import at.searles.android.storage.dialog.ReplaceExistingDialogFragment
+import at.searles.fractlang.parsing.FractlangParser
 
 
 class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.Callback, DiscardAndOpenDialogFragment.Callback {
@@ -29,6 +30,10 @@ class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.
     private val saveButton: Button by lazy {
         findViewById<Button>(R.id.saveButton)
     }
+
+    private var content: String
+        get() = editor.text.toString()
+        set(value) { editor.setText(value)}
 
     private lateinit var syntaxUpdater: DelayedUpdater
 
@@ -67,13 +72,17 @@ class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.
         // since I don't need caching here, simply create it directly.
         provider = SourceFilesProvider(this)
 
-        // === Syntax Highlighting ===
+        // Set up Syntax Highlighting
         val textWatcher = ChangesTextWatcher()
-        val updateTask = SyntaxUpdateTask(editor, textWatcher)
 
-        editor.addTextChangedListener(textWatcher)
-        syntaxUpdater = DelayedUpdater(updateTask, 500)
-        syntaxUpdater.tick() // schedule an update
+        val updateTask = SyntaxUpdateTask(
+                editor,
+                textWatcher,
+                FractlangObserver(editor.resources, editor.editableText),
+                FractlangParser.program,
+                FractlangParser.eof)
+
+        syntaxUpdater = DelayedUpdater(updateTask, 500).apply { tick() }
 
         nameEditText.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -111,13 +120,13 @@ class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.
                 startStorageActivity()
                 true
             }
+            R.id.compile -> {
+                tryCompile()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
-
-    private var content: String
-        get() = editor.text.toString()
-        set(value) { editor.setText(value)}
 
     override fun discardAndOpen(name: String) {
         // this is also called if nothing has to be discarded.
@@ -145,6 +154,11 @@ class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.
         isModified = false
         this.currentName = name
         updateSaveButtonEnabled()
+    }
+
+    private fun tryCompile() {
+
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     fun onSaveButtonClicked(@Suppress("UNUSED_PARAMETER") view: View) {

@@ -22,4 +22,5 @@
     <color name="blueTextColor">#268bd2</color>
     <color name="cyanTextColor">#2aa198</color>
     <color name="greenTextColor">#859900</color>
+    <color name="redBackgroundColor">#30dc322f</color>
 </resources>

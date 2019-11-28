@@ -12,6 +12,6 @@
         android:id="@+id/format"
         android:title="Format" />
     <item
-        android:id="@+id/return"
+        android:id="@+id/return_program"
         android:title="Return" />
 </menu>

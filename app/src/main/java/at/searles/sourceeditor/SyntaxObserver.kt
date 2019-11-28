@@ -9,4 +9,5 @@ interface SyntaxObserver {
     fun onAnnotation(annotation: Any?, stream: ParserStream)
     fun onMissingEof(stream: ParserStream)
     fun onParserError(e: ParserLookaheadException)
+    fun onUnexpectedEnd(stream: ParserStream)
 }
