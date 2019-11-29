@@ -14,7 +14,13 @@ import androidx.appcompat.app.AppCompatActivity
 import at.searles.android.storage.StorageActivity
 import at.searles.android.storage.dialog.DiscardAndOpenDialogFragment
 import at.searles.android.storage.dialog.ReplaceExistingDialogFragment
+import at.searles.fractlang.CompilerInstance
 import at.searles.fractlang.parsing.FractlangParser
+import at.searles.parsing.ParserLookaheadException
+import at.searles.parsing.ParserStream
+import at.searles.parsing.printing.StringOutStream
+import at.searles.parsingtools.printer.CodeFormatter
+import at.searles.parsingtools.printer.Editor
 
 
 class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.Callback, DiscardAndOpenDialogFragment.Callback {
@@ -23,7 +29,7 @@ class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.
         findViewById<EditText>(R.id.sourceEditText)
     }
 
-    private val nameEditText: EditText by lazy {
+    private val fileNameEditor: EditText by lazy {
         findViewById<EditText>(R.id.nameEditText)
     }
 
@@ -31,7 +37,7 @@ class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.
         findViewById<Button>(R.id.saveButton)
     }
 
-    private var content: String
+    private var sourceCode: String
         get() = editor.text.toString()
         set(value) { editor.setText(value)}
 
@@ -84,7 +90,7 @@ class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.
 
         syntaxUpdater = DelayedUpdater(updateTask, 500).apply { tick() }
 
-        nameEditText.addTextChangedListener(object: TextWatcher {
+        fileNameEditor.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 updateSaveButtonEnabled()
             }
@@ -124,6 +130,12 @@ class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.
                 tryCompile()
                 true
             }
+            R.id.format -> {
+                formatCode()
+            }
+            R.id.return_program -> {
+
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -131,13 +143,13 @@ class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.
     override fun discardAndOpen(name: String) {
         // this is also called if nothing has to be discarded.
         try {
-            provider.load(name) { content = it }
+            provider.load(name) { sourceCode = it }
         } catch(th: Throwable) {
             Toast.makeText(this, resources.getString(at.searles.android.storage.R.string.error, th.localizedMessage), Toast.LENGTH_LONG).show()
             return
         }
 
-        nameEditText.setText(name)
+        fileNameEditor.setText(name)
         isModified = false
         currentName = name
         updateSaveButtonEnabled()
@@ -145,7 +157,7 @@ class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.
 
     override fun replaceExistingAndSave(name: String) {
         try {
-            provider.save(name, { content }, true)
+            provider.save(name, { sourceCode }, true)
         } catch(th: Throwable) {
             Toast.makeText(this, resources.getString(at.searles.android.storage.R.string.error, th.localizedMessage), Toast.LENGTH_LONG).show()
             return
@@ -156,17 +168,38 @@ class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.
         updateSaveButtonEnabled()
     }
 
-    private fun tryCompile() {
+    private fun formatCode() {
+// FIXME        outStream = StringOutStream()
+//
+//        val formatter = CodeFormatter(whiteSpaceTokId, Editor.fromOutStream(outStream))
+//
+//        inStream.tokStream().setListener(formatter)
+//        inStream.setListener(formatter.createParserStreamListener(
+//                setOf(Markers.Block),
+//                setOf(Markers.SpaceAfter),
+//                setOf(Markers.NewlineAfter)
+//
+//        ))
+    }
 
+    private fun tryCompile() {
+        try {
+            val compilerInstance = CompilerInstance(sourceCode).analyze()
+            val ast = FractlangParser.program.parse(ParserStream.fromString(sourceCode))
+
+        } catch(e: ParserLookaheadException) {
+            editor.setSelection(e.failedTokenStart.toInt(), e.failedTokenEnd.toInt())
+            Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
+        }
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     fun onSaveButtonClicked(@Suppress("UNUSED_PARAMETER") view: View) {
-        val name = nameEditText.text.toString()
+        val name = fileNameEditor.text.toString()
         val status: Boolean
 
         try {
-            status = provider.save(name, {content}, name == currentName)
+            status = provider.save(name, {sourceCode}, name == currentName)
         } catch (th: Throwable) {
             Toast.makeText(this, resources.getString(at.searles.android.storage.R.string.error, th.localizedMessage), Toast.LENGTH_LONG).show()
             return
@@ -183,7 +216,7 @@ class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.
     }
 
     private fun updateSaveButtonEnabled() {
-        val isEnabled = isModified || currentName != nameEditText.text.toString()
+        val isEnabled = isModified || currentName != fileNameEditor.text.toString()
         saveButton.isEnabled = isEnabled
     }
 
