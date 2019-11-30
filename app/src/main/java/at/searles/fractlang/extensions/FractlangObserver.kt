@@ -1,4 +1,4 @@
-package at.searles.sourceeditor
+package at.searles.fractlang.extensions
 
 import android.content.res.Resources
 import android.graphics.Typeface
@@ -12,6 +12,8 @@ import at.searles.fractlang.parsing.Annot
 import at.searles.fractlang.parsing.FractlangParser
 import at.searles.parsing.ParserLookaheadException
 import at.searles.parsing.ParserStream
+import at.searles.sourceeditor.R
+import at.searles.sourceeditor.SyntaxObserver
 import kotlin.math.max
 import kotlin.math.min
 
@@ -45,8 +47,12 @@ class FractlangObserver(private val resources: Resources, private val sourceCode
     }
 
     override fun onParserError(e: ParserLookaheadException) {
-        error(min((sourceCode.length - 1).toLong(), e.failedTokenStart),
-                max(sourceCode.length.toLong(), e.failedTokenEnd))
+        error(min((sourceCode.length - 1).toLong(), e.unexpectedTokenStart),
+                max(sourceCode.length.toLong(), e.unexpectedTokenEnd))
+    }
+
+    fun error(start: Long, end: Long) {
+        sourceCode.setSpan(BackgroundColorSpan(toColor(R.color.redBackgroundColor)), start.toInt(), end.toInt(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
     }
 
     private fun toColor(resourceId: Int): Int {
@@ -56,10 +62,6 @@ class FractlangObserver(private val resources: Resources, private val sourceCode
     override fun onUnexpectedEnd(stream: ParserStream) {
         val end = sourceCode.length
         error(max(0, stream.offset - 1), end.toLong())
-    }
-
-    private fun error(start: Long, end: Long) {
-        sourceCode.setSpan(BackgroundColorSpan(toColor(R.color.redBackgroundColor)), start.toInt(), end.toInt(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
     }
 
     private fun string(start: Long, end: Long) {

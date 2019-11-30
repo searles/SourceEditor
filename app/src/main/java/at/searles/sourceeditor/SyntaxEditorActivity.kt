@@ -15,17 +15,17 @@ import at.searles.android.storage.StorageActivity
 import at.searles.android.storage.dialog.DiscardAndOpenDialogFragment
 import at.searles.android.storage.dialog.ReplaceExistingDialogFragment
 import at.searles.fractlang.CompilerInstance
+import at.searles.fractlang.FractlangUtils
+import at.searles.fractlang.extensions.FractlangObserver
 import at.searles.fractlang.parsing.FractlangParser
+import at.searles.fractlang.semanticanalysis.SemanticAnalysisException
 import at.searles.parsing.ParserLookaheadException
 import at.searles.parsing.ParserStream
-import at.searles.parsing.printing.StringOutStream
-import at.searles.parsingtools.printer.CodeFormatter
-import at.searles.parsingtools.printer.Editor
 
 
 class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.Callback, DiscardAndOpenDialogFragment.Callback {
 
-    private val editor: EditText by lazy {
+    private val sourceCodeEditor: EditText by lazy {
         findViewById<EditText>(R.id.sourceEditText)
     }
 
@@ -38,8 +38,8 @@ class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.
     }
 
     private var sourceCode: String
-        get() = editor.text.toString()
-        set(value) { editor.setText(value)}
+        get() = sourceCodeEditor.text.toString()
+        set(value) { sourceCodeEditor.setText(value)}
 
     private lateinit var syntaxUpdater: DelayedUpdater
 
@@ -82,9 +82,9 @@ class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.
         val textWatcher = ChangesTextWatcher()
 
         val updateTask = SyntaxUpdateTask(
-                editor,
+                sourceCodeEditor,
                 textWatcher,
-                FractlangObserver(editor.resources, editor.editableText),
+                FractlangObserver(sourceCodeEditor.resources, sourceCodeEditor.editableText),
                 FractlangParser.program,
                 FractlangParser.eof)
 
@@ -132,9 +132,10 @@ class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.
             }
             R.id.format -> {
                 formatCode()
+                false
             }
             R.id.return_program -> {
-
+                false
             }
             else -> super.onOptionsItemSelected(item)
         }
@@ -169,6 +170,7 @@ class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.
     }
 
     private fun formatCode() {
+
 // FIXME        outStream = StringOutStream()
 //
 //        val formatter = CodeFormatter(whiteSpaceTokId, Editor.fromOutStream(outStream))
@@ -182,16 +184,19 @@ class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.
 //        ))
     }
 
+
     private fun tryCompile() {
         try {
-            val compilerInstance = CompilerInstance(sourceCode).analyze()
-            val ast = FractlangParser.program.parse(ParserStream.fromString(sourceCode))
-
+            CompilerInstance(ParserStream.fromString(sourceCode), FractlangUtils.instructions).analyze()
         } catch(e: ParserLookaheadException) {
-            editor.setSelection(e.failedTokenStart.toInt(), e.failedTokenEnd.toInt())
+            sourceCodeEditor.setSelection(e.unexpectedTokenStart.toInt(), e.unexpectedTokenEnd.toInt())
+            FractlangObserver(resources, sourceCodeEditor.editableText).onParserError(e)
+            Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
+        } catch(e: SemanticAnalysisException) {
+            sourceCodeEditor.setSelection(e.trace.start.toInt(), e.trace.end.toInt())
+            FractlangObserver(resources, sourceCodeEditor.editableText).error(e.trace.start, e.trace.end)
             Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
         }
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     fun onSaveButtonClicked(@Suppress("UNUSED_PARAMETER") view: View) {

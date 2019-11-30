@@ -32,7 +32,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'com.github.searles:fractlang:9a430b2231cd14fc4ae707aa44b2a3db6074dca5'
+    implementation 'com.github.searles:fractlang:eca2b7d6892d1b91836070be6df470e52d6f4aaf'
     implementation 'com.github.searles:parsing:1883d20ff2a2548bea02b0b1fb70e689fe9114ac'
     implementation 'com.github.searles:parsingtools:6b90da5e455d098e18b922282b5962cbc991223f'
     implementation 'com.github.searles:storage:0.1.2'
