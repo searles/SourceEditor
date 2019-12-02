@@ -17,11 +17,13 @@ import at.searles.android.storage.dialog.ReplaceExistingDialogFragment
 import at.searles.fractlang.CompilerInstance
 import at.searles.fractlang.FractlangUtils
 import at.searles.fractlang.extensions.FractlangObserver
+import at.searles.fractlang.parsing.Annot
+import at.searles.fractlang.parsing.FractlangFormatter
 import at.searles.fractlang.parsing.FractlangParser
 import at.searles.fractlang.semanticanalysis.SemanticAnalysisException
 import at.searles.parsing.ParserLookaheadException
 import at.searles.parsing.ParserStream
-
+import at.searles.parsingtools.formatter.CodeFormatter
 
 class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.Callback, DiscardAndOpenDialogFragment.Callback {
 
@@ -170,20 +172,8 @@ class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.
     }
 
     private fun formatCode() {
-
-// FIXME        outStream = StringOutStream()
-//
-//        val formatter = CodeFormatter(whiteSpaceTokId, Editor.fromOutStream(outStream))
-//
-//        inStream.tokStream().setListener(formatter)
-//        inStream.setListener(formatter.createParserStreamListener(
-//                setOf(Markers.Block),
-//                setOf(Markers.SpaceAfter),
-//                setOf(Markers.NewlineAfter)
-//
-//        ))
+        FractlangFormatter.format(EditTextAdapter(sourceCodeEditor.editableText))
     }
-
 
     private fun tryCompile() {
         try {
