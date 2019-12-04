@@ -8,7 +8,7 @@ class EditTextAdapter(private val editable: Editable): EditableText, CharSequenc
         editable.insert(position.toInt(), insertion)
     }
 
-    override fun replace(start: Long, end: Long, replacement: CharSequence) {
-        editable.replace(start.toInt(), end.toInt(), replacement)
+    override fun delete(start: Long, end: Long) {
+        editable.delete(start.toInt(), end.toInt())
     }
 }
