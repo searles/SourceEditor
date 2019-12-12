@@ -17,13 +17,11 @@ import at.searles.android.storage.dialog.ReplaceExistingDialogFragment
 import at.searles.fractlang.CompilerInstance
 import at.searles.fractlang.FractlangUtils
 import at.searles.fractlang.extensions.FractlangObserver
-import at.searles.fractlang.parsing.Annot
 import at.searles.fractlang.parsing.FractlangFormatter
 import at.searles.fractlang.parsing.FractlangParser
 import at.searles.fractlang.semanticanalysis.SemanticAnalysisException
 import at.searles.parsing.ParserLookaheadException
 import at.searles.parsing.ParserStream
-import at.searles.parsingtools.formatter.CodeFormatter
 
 class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.Callback, DiscardAndOpenDialogFragment.Callback {
 
@@ -53,7 +51,7 @@ class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.source_editor_activity_main)
 
         // init current key
         if(savedInstanceState != null) {
@@ -118,7 +116,7 @@ class SyntaxEditorActivity : AppCompatActivity(), ReplaceExistingDialogFragment.
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
-        inflater.inflate(R.menu.main_menu, menu)
+        inflater.inflate(R.menu.source_editor_main_menu, menu)
         return true
     }
 

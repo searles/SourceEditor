@@ -9,7 +9,7 @@ class SourceFilesProvider(context: Context): FilesProvider(context.getDir(direct
     override fun setImageInView(name: String, imageView: ImageView) {
         Glide
                 .with(imageView.context)
-                .load(R.drawable.ic_launcher_foreground)
+                .load(R.drawable.ic_developer_mode_black_24dp)
                 .centerCrop()
                 // TODO .placeholder(R.drawable.loading_spinner)
                 .into(imageView)
