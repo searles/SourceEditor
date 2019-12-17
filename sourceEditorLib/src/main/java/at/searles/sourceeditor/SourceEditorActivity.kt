@@ -56,6 +56,11 @@ class SourceEditorActivity : OpenSaveActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.source_editor_activity_main)
+
+        if(savedInstanceState == null) {
+            // fetch from intent
+            sourceCode = intent.getStringExtra(sourceKey)!!
+        }
     }
 
     override fun onDestroy() {
@@ -90,7 +95,7 @@ class SourceEditorActivity : OpenSaveActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId) {
-            R.id.openStorageManager -> {
+            R.id.openStorageAction -> {
                 startStorageActivity()
                 true
             }
@@ -102,7 +107,7 @@ class SourceEditorActivity : OpenSaveActivity() {
                 formatCode()
                 true
             }
-            R.id.returnProgram -> {
+            R.id.returnAction -> {
                 finishAndReturnContent()
                 true
             }
