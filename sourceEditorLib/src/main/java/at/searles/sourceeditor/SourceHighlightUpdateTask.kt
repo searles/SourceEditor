@@ -7,11 +7,11 @@ import at.searles.parsing.ParserLookaheadException
 import at.searles.parsing.ParserStream
 import at.searles.parsing.Recognizable
 
-class SyntaxUpdateTask(private val editor: EditText,
-                       private val updateTrigger: TextWatcher,
-                       private val observer: SyntaxObserver,
-                       private val parser: Recognizable,
-                       private val eofParser: Recognizable) : Runnable {
+class SourceHighlightUpdateTask(private val editor: EditText,
+                                private val updateTrigger: TextWatcher,
+                                private val observer: SourceObserver,
+                                private val parser: Recognizable,
+                                private val eofParser: Recognizable) : Runnable {
 
     init {
         editor.addTextChangedListener(updateTrigger)

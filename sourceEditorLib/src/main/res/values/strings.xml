@@ -6,4 +6,10 @@
     <string name="editor">Editor</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="title_syntax_editor_activity">Fractlang Editor</string>
+    <string name="compile">Compile</string>
+    <string name="format">Format</string>
+    <string name="returnProgram">Return</string>
+    <string name="returnWithoutSavingQuestion">Return program without saving?</string>
+    <string name="cancelWithoutSavingQuestion">Close without saving?</string>
+    <string name="openSourceFileTitle">Open Source File</string>
 </resources>

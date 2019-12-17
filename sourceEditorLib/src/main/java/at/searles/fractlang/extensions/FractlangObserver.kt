@@ -13,11 +13,11 @@ import at.searles.fractlang.parsing.FractlangParser
 import at.searles.parsing.ParserLookaheadException
 import at.searles.parsing.ParserStream
 import at.searles.sourceeditor.R
-import at.searles.sourceeditor.SyntaxObserver
+import at.searles.sourceeditor.SourceObserver
 import kotlin.math.max
 import kotlin.math.min
 
-class FractlangObserver(private val resources: Resources, private val sourceCode: Editable): SyntaxObserver {
+class FractlangObserver(private val resources: Resources, private val sourceCode: Editable): SourceObserver {
     override fun onToken(tokenId: Int, frame: Frame) {
         when (tokenId) {
             FractlangParser.mlComment.tokenId ->

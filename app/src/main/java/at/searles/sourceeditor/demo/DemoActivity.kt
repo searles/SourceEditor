@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import at.searles.sourceeditor.SyntaxEditorActivity
+import at.searles.sourceeditor.SourceEditorActivity
 
 class DemoActivity : AppCompatActivity() {
 
@@ -17,7 +17,7 @@ class DemoActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         runButton.setOnClickListener {
-            Intent(this, SyntaxEditorActivity::class.java).also {
+            Intent(this, SourceEditorActivity::class.java).also {
                 startActivity(it)
             }
         }

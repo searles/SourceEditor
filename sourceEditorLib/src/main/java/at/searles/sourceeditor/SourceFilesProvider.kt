@@ -9,13 +9,12 @@ class SourceFilesProvider(context: Context): FilesProvider(context.getDir(direct
     override fun setImageInView(name: String, imageView: ImageView) {
         Glide
                 .with(imageView.context)
-                .load(R.drawable.ic_developer_mode_black_24dp)
+                .load(R.drawable.ic_text_24dp)
                 .centerCrop()
-                // TODO .placeholder(R.drawable.loading_spinner)
                 .into(imageView)
     }
 
     companion object {
-        private const val directoryName = "demo"
+        private const val directoryName = "dev"
     }
 }

@@ -2,16 +2,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/open_storage_manager"
+        android:id="@+id/openStorageManager"
         android:title="@string/open"
+        android:icon="@drawable/ic_folder_open_24dp"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/returnProgram"
+        android:icon="@drawable/ic_check_circle_24dp"
+        android:title="@string/returnProgram"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/compile"
-        android:title="Compile" />
+        android:icon="@drawable/ic_play_arrow_24dp"
+        android:title="@string/compile" />
     <item
         android:id="@+id/format"
-        android:title="Format" />
-    <item
-        android:id="@+id/return_program"
-        android:title="Return" />
+        android:icon="@drawable/ic_format_indent_increase_24dp"
+        android:title="@string/format" />
 </menu>

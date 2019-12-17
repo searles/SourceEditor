@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SyntaxEditorActivity">
+    tools:context=".SourceEditorActivity">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/nameTextInputLayout"
@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <EditText
-            android:id="@+id/nameEditText"
+            android:id="@+id/fileNameEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -32,7 +32,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:onClick="onSaveButtonClicked"
         android:text="@string/saveLabel"
         app:layout_constraintBottom_toBottomOf="@+id/nameTextInputLayout"
         app:layout_constraintEnd_toEndOf="parent"
