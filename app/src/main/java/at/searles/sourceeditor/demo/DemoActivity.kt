@@ -27,7 +27,7 @@ class DemoActivity : AppCompatActivity() {
                 "\n" +
                 "val bailoutValue = 64;\n" +
                 "val maxExponent = 2;\n" +
-                "val maxIterationCount = 1024;\n" +
+                "extern maxIterationCount: \"MaxIterationCount\" = \"1024\";\n" +
                 "\n" +
                 "while ({\n" +
                 "    z = z^2 + c;\n" +
@@ -39,7 +39,7 @@ class DemoActivity : AppCompatActivity() {
                 "        var continuousN = n + continuousAddend;\n" +
                 "        setResult(1, log (1 + continuousN), continuousN);\n" +
                 "        false\n" +
-                "    } else if(not next(n, maxIterationCount)) {\n" +
+                "    } else if(not next(maxIterationCount, n)) {\n" +
                 "        setResult(0, im logZ / 2 pi, re logZ)\n" +
                 "        false\n" +
                 "    } else {\n" +
@@ -50,6 +50,9 @@ class DemoActivity : AppCompatActivity() {
         runButton.setOnClickListener {
             Intent(this, SourceEditorActivity::class.java).also {
                 it.putExtra(SourceEditorActivity.sourceKey, source)
+                it.putExtra(SourceEditorActivity.parametersKey,
+                        SourceEditorActivity.toBundle(mapOf("maxIterationCount" to "123")))
+
                 startActivityForResult(it, sourceRequestCode)
             }
         }

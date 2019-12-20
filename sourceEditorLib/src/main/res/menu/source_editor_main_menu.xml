@@ -19,4 +19,9 @@
         android:id="@+id/format"
         android:icon="@drawable/ic_format_indent_increase"
         android:title="@string/format" />
+    <item
+        android:id="@+id/resetParameters"
+        android:icon="@drawable/ic_play_arrow"
+        android:title="@string/resetParameters"
+        android:checkable="true"/>
 </menu>

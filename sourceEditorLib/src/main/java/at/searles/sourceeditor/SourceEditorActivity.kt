@@ -10,7 +10,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import at.searles.android.storage.OpenSaveActivity
-import at.searles.fractlang.CompilerInstance
+import at.searles.fractlang.FractlangProgram
 import at.searles.fractlang.extensions.FractlangObserver
 import at.searles.fractlang.parsing.FractlangFormatter
 import at.searles.fractlang.parsing.FractlangParser
@@ -23,9 +23,16 @@ class SourceEditorActivity : OpenSaveActivity() {
         findViewById<EditText>(R.id.sourceEditText)
     }
 
+    private lateinit var resetParametersMenuItem: MenuItem
+
+    private val selectedParameters
+        get() = if(!resetParametersMenuItem.isChecked) parameters else emptyMap()
+
     private var sourceCode: String
         get() = sourceCodeEditor.text.toString()
         set(value) { sourceCodeEditor.setText(value)}
+
+    private lateinit var parameters: Map<String, String>
 
     private lateinit var syntaxUpdater: DelayedUpdater
 
@@ -50,6 +57,7 @@ class SourceEditorActivity : OpenSaveActivity() {
     override fun createReturnIntent(): Intent {
         return Intent().apply {
             putExtra(sourceKey, sourceCode)
+            putExtra(parametersKey, toBundle(parameters))
         }
     }
 
@@ -61,6 +69,8 @@ class SourceEditorActivity : OpenSaveActivity() {
             // fetch from intent
             sourceCode = intent.getStringExtra(sourceKey)!!
         }
+
+        parameters = toStringMap(intent.getBundleExtra(parametersKey)!!)
     }
 
     override fun onDestroy() {
@@ -90,6 +100,14 @@ class SourceEditorActivity : OpenSaveActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.source_editor_main_menu, menu)
+
+        resetParametersMenuItem = menu.findItem(R.id.resetParameters)
+        resetParametersMenuItem.isChecked = false
+
+        if(parameters.isEmpty()) {
+            resetParametersMenuItem.isEnabled = false
+        }
+
         return true
     }
 
@@ -99,16 +117,22 @@ class SourceEditorActivity : OpenSaveActivity() {
                 startStorageActivity()
                 true
             }
-            R.id.compile -> {
-                tryCompile()
-                true
-            }
             R.id.format -> {
                 formatCode()
                 true
             }
+            R.id.compile -> {
+                tryCompile()
+                true
+            }
             R.id.returnAction -> {
-                finishAndReturnContent()
+                if(tryCompile()) {
+                    finishAndReturnContent()
+                }
+
+                true
+            }
+            R.id.resetParameters -> {
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -120,18 +144,24 @@ class SourceEditorActivity : OpenSaveActivity() {
         FractlangFormatter.format(EditTextAdapter(sourceCodeEditor.editableText))
     }
 
-    private fun tryCompile() {
+    private fun tryCompile(): Boolean {
         try {
-            CompilerInstance(sourceCode, emptyMap()).analyze()
+            FractlangProgram(sourceCode, selectedParameters)
+            Toast.makeText(this, getString(R.string.successfullyCompiled), Toast.LENGTH_SHORT).show()
+            return true
         } catch(e: ParserLookaheadException) {
             sourceCodeEditor.setSelection(e.unexpectedTokenStart.toInt(), e.unexpectedTokenEnd.toInt())
             FractlangObserver(resources, sourceCodeEditor.editableText).onParserError(e)
             Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
+            e.printStackTrace()
         } catch(e: SemanticAnalysisException) {
             sourceCodeEditor.setSelection(e.trace.start.toInt(), e.trace.end.toInt())
             FractlangObserver(resources, sourceCodeEditor.editableText).error(e.trace.start, e.trace.end)
             Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
+            e.printStackTrace()
         }
+
+        return false
     }
 
     inner class ChangesTextWatcher: TextWatcher {
@@ -146,5 +176,16 @@ class SourceEditorActivity : OpenSaveActivity() {
 
     companion object {
         const val sourceKey = "source"
+        const val parametersKey = "parameters"
+
+        fun toBundle(map: Map<String, String>): Bundle {
+            val bundle = Bundle()
+            map.forEach { (key, value) -> bundle.putString(key, value) }
+            return bundle
+        }
+
+        fun toStringMap(bundle: Bundle): Map<String, String> {
+            return bundle.keySet().map { key -> key to bundle.getString(key)!! }.toMap()
+        }
     }
 }

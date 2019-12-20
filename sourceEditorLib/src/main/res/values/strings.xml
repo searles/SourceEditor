@@ -12,4 +12,6 @@
     <string name="returnWithoutSavingQuestion">Return program without saving?</string>
     <string name="cancelWithoutSavingQuestion">Close without saving?</string>
     <string name="openSourceFileTitle">Open Source File</string>
+    <string name="resetParameters">Reset Parameters</string>
+    <string name="successfullyCompiled">Program was compiled successfully</string>
 </resources>
