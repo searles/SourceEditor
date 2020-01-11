@@ -90,7 +90,7 @@ class SourceEditorActivity : OpenSaveActivity() {
         val updateTask = SourceHighlightUpdateTask(
                 sourceCodeEditor,
                 textWatcher,
-                FractlangObserver(sourceCodeEditor.resources, sourceCodeEditor.editableText),
+                FractlangObserver(sourceCodeEditor.resources),
                 FractlangParser.program,
                 FractlangParser.eof)
 
@@ -151,12 +151,12 @@ class SourceEditorActivity : OpenSaveActivity() {
             return true
         } catch(e: ParserLookaheadException) {
             sourceCodeEditor.setSelection(e.unexpectedTokenStart.toInt(), e.unexpectedTokenEnd.toInt())
-            FractlangObserver(resources, sourceCodeEditor.editableText).onParserError(e)
+            FractlangObserver(resources).onParserError(sourceCodeEditor.editableText, e)
             Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
             e.printStackTrace()
         } catch(e: SemanticAnalysisException) {
             sourceCodeEditor.setSelection(e.trace.start.toInt(), e.trace.end.toInt())
-            FractlangObserver(resources, sourceCodeEditor.editableText).error(e.trace.start, e.trace.end)
+            FractlangObserver(resources).error(sourceCodeEditor.editableText, e.trace.start, e.trace.end)
             Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
             e.printStackTrace()
         }

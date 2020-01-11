@@ -27,12 +27,12 @@ class SourceHighlightUpdateTask(private val editor: EditText,
 
             // Highlight comments.
             inputStream.tokStream().setListener { _, tokId, frame ->
-                observer.onToken(tokId, frame)
+                observer.onToken(editor.text, tokId, frame)
             }
 
             inputStream.setListener(object : ParserStream.SimpleListener {
                 override fun <C : Any?> annotate(stream: ParserStream, annotation: C) {
-                    observer.onAnnotation(annotation, stream)
+                    observer.onAnnotation(editor.text, annotation, stream)
                 }
             })
 
@@ -40,12 +40,12 @@ class SourceHighlightUpdateTask(private val editor: EditText,
                 val status = parser.recognize(inputStream)
 
                 if(!status) {
-                    observer.onUnexpectedEnd(inputStream)
+                    observer.onUnexpectedEnd(editor.text, inputStream)
                 } else if (!eofParser.recognize(inputStream)) {
-                    observer.onMissingEof(inputStream)
+                    observer.onMissingEof(editor.text, inputStream)
                 }
             } catch (e: ParserLookaheadException) {
-                observer.onParserError(e)
+                observer.onParserError(editor.text, e)
             }
         } finally {
             editor.addTextChangedListener(updateTrigger)
