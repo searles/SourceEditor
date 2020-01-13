@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="@string/filename"
-            android:inputType="text"
+            android:inputType="textNoSuggestions"
             android:text="" />
     </com.google.android.material.textfield.TextInputLayout>
 

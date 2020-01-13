@@ -35,7 +35,7 @@ dependencies {
     implementation 'com.github.searles:fractlang:0.9.1'
     implementation 'com.github.searles:parsing:2.0.0'
     implementation 'com.github.searles:parsingtools:0.1.0'
-    implementation 'com.github.searles:storage:0.9.1'
+    implementation 'com.github.searles:storage:0.9.2'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
