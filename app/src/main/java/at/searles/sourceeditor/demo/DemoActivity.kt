@@ -40,7 +40,7 @@ class DemoActivity : AppCompatActivity() {
                 "        setResult(1, log (1 + continuousN), continuousN);\n" +
                 "        false\n" +
                 "    } else if(not next(maxIterationCount, n)) {\n" +
-                "        setResult(0, im logZ / 2 pi, re logZ)\n" +
+                "        setResult(0, im logZ / 2 pi, re logZ);\n" +
                 "        false\n" +
                 "    } else {\n" +
                 "        true\n" +

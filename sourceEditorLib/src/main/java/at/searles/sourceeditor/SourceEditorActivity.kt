@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 import at.searles.android.storage.OpenSaveActivity
 import at.searles.fractlang.FractlangProgram
 import at.searles.fractlang.extensions.FractlangObserver
@@ -36,6 +37,9 @@ class SourceEditorActivity : OpenSaveActivity() {
 
     private lateinit var syntaxUpdater: DelayedUpdater
 
+    private val toolbar: Toolbar by lazy {
+        findViewById<Toolbar>(R.id.toolbar)
+    }
 
     override var contentString
         get() = sourceCode
@@ -64,6 +68,7 @@ class SourceEditorActivity : OpenSaveActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.source_editor_activity_main)
+        setSupportActionBar(toolbar)
 
         if(savedInstanceState == null) {
             // fetch from intent
