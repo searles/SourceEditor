@@ -157,7 +157,7 @@ class SourceEditorActivity : OpenSaveActivity() {
         } catch(e: ParserLookaheadException) {
             sourceCodeEditor.setSelection(e.unexpectedTokenStart.toInt(), e.unexpectedTokenEnd.toInt())
             FractlangObserver(resources).onParserError(sourceCodeEditor.editableText, e)
-            Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Unexpected token. Expected ${e.failedParser().right()}", Toast.LENGTH_LONG).show()
             e.printStackTrace()
         } catch(e: SemanticAnalysisException) {
             sourceCodeEditor.setSelection(e.trace.start.toInt(), e.trace.end.toInt())
