@@ -2,15 +2,24 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/openStorageAction"
-        android:title="@string/open"
-        android:icon="@drawable/ic_folder_open"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/returnAction"
         android:icon="@drawable/ic_return"
         android:title="@string/returnProgram"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/openStorageAction"
+        android:title="@string/open"
+        android:icon="@drawable/ic_open"/>
+    <item
+        android:id="@+id/saveAction"
+        android:title="@string/saveLabel"
+        android:icon="@drawable/ic_save"
+        />
+    <item
+        android:id="@+id/saveAsAction"
+        android:title="@string/saveAs"
+        android:icon="@drawable/ic_save_as"
+        />
     <item
         android:id="@+id/compile"
         android:icon="@drawable/ic_play_arrow"
@@ -23,5 +32,6 @@
         android:id="@+id/resetParameters"
         android:icon="@drawable/ic_play_arrow"
         android:title="@string/resetParameters"
-        android:checkable="true"/>
+        android:checkable="true"
+        android:checked="false"/>
 </menu>

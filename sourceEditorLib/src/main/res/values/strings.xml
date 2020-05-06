@@ -14,4 +14,5 @@
     <string name="openSourceFileTitle">Open Source File</string>
     <string name="resetParameters">Reset Parameters</string>
     <string name="successfullyCompiled">Program was compiled successfully</string>
+    <string name="untitled">(untitled)</string>
 </resources>

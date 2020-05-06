@@ -1,24 +1,29 @@
 package at.searles.sourceeditor
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import at.searles.android.storage.OpenSaveActivity
+import at.searles.android.storage.StorageEditor
+import at.searles.android.storage.StorageEditorCallback
+import at.searles.android.storage.data.StorageProvider
 import at.searles.fractlang.FractlangProgram
 import at.searles.fractlang.extensions.FractlangObserver
 import at.searles.fractlang.parsing.FractlangFormatter
 import at.searles.fractlang.parsing.FractlangParser
 import at.searles.fractlang.semanticanalysis.SemanticAnalysisException
 import at.searles.parsing.ParserLookaheadException
+import at.searles.sourceeditor.storage.SourceEditorStorageEditor
 
-class SourceEditorActivity : OpenSaveActivity() {
+// XXX Next developments:
+// * Undo/Redo
+// * Simulate/Execute for point x:y
+class SourceEditorActivity : StorageEditorCallback<String>, AppCompatActivity() {
 
     private val sourceCodeEditor: EditText by lazy {
         findViewById<EditText>(R.id.sourceEditText)
@@ -29,41 +34,20 @@ class SourceEditorActivity : OpenSaveActivity() {
     private val selectedParameters
         get() = if(!resetParametersMenuItem.isChecked) parameters else emptyMap()
 
-    private var sourceCode: String
+    override var value: String
         get() = sourceCodeEditor.text.toString()
         set(value) { sourceCodeEditor.setText(value)}
 
     private lateinit var parameters: Map<String, String>
-
     private lateinit var syntaxUpdater: DelayedUpdater
+
+    private lateinit var saveMenuItem: MenuItem
 
     private val toolbar: Toolbar by lazy {
         findViewById<Toolbar>(R.id.toolbar)
     }
 
-    override var contentString
-        get() = sourceCode
-        set(value) { sourceCode = value}
-
-    override val fileNameEditor: EditText by lazy {
-        findViewById<EditText>(R.id.fileNameEditText)
-    }
-
-    override lateinit var provider: SourceFilesProvider
-
-    override val saveButton: Button by lazy {
-        findViewById<Button>(R.id.saveButton)
-    }
-
-    override val storageActivityTitle: String
-        get() = getString(R.string.openSourceFileTitle)
-
-    override fun createReturnIntent(): Intent {
-        return Intent().apply {
-            putExtra(sourceKey, sourceCode)
-            putExtra(parametersKey, toBundle(parameters))
-        }
-    }
+    override lateinit var storageEditor: StorageEditor<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,10 +56,18 @@ class SourceEditorActivity : OpenSaveActivity() {
 
         if(savedInstanceState == null) {
             // fetch from intent
-            sourceCode = intent.getStringExtra(sourceKey)!!
+            value = intent.getStringExtra(sourceKey)!!
         }
 
+        storageEditor = SourceEditorStorageEditor(this, StorageProvider(directoryName, this), this)
+        storageEditor.onRestoreInstanceState(savedInstanceState)
+
         parameters = toStringMap(intent.getBundleExtra(parametersKey)!!)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        storageEditor.onSaveInstanceState(outState)
     }
 
     override fun onDestroy() {
@@ -85,9 +77,6 @@ class SourceEditorActivity : OpenSaveActivity() {
 
     override fun onResume() {
         super.onResume()
-
-        // since I don't need caching here, simply create it directly.
-        provider = SourceFilesProvider(this)
 
         // Set up Syntax Highlighting
         val textWatcher = ChangesTextWatcher()
@@ -107,11 +96,13 @@ class SourceEditorActivity : OpenSaveActivity() {
         inflater.inflate(R.menu.source_editor_main_menu, menu)
 
         resetParametersMenuItem = menu.findItem(R.id.resetParameters)
-        resetParametersMenuItem.isChecked = false
 
         if(parameters.isEmpty()) {
             resetParametersMenuItem.isEnabled = false
         }
+
+        saveMenuItem = menu.findItem(R.id.saveAction)
+        storageEditor.fireStorageItemStatus()
 
         return true
     }
@@ -119,7 +110,7 @@ class SourceEditorActivity : OpenSaveActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when(item.itemId) {
             R.id.openStorageAction -> {
-                startStorageActivity()
+                storageEditor.onOpen(openRequestCode)
                 true
             }
             R.id.format -> {
@@ -132,18 +123,30 @@ class SourceEditorActivity : OpenSaveActivity() {
             }
             R.id.returnAction -> {
                 if(tryCompile()) {
-                    finishAndReturnContent()
+                    storageEditor.onFinish(false)
                 }
 
                 true
             }
             R.id.resetParameters -> {
+                resetParametersMenuItem.isChecked = !resetParametersMenuItem.isChecked
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
+    override fun onStorageItemChanged(name: String?, isModified: Boolean) {
+        toolbar.subtitle = if(name != null)
+            if(isModified)
+                "*$name"
+            else
+                name
+        else
+            getString(R.string.untitled)
+
+        saveMenuItem.isEnabled = isModified && name != null
+    }
 
     private fun formatCode() {
         FractlangFormatter.format(EditTextAdapter(sourceCodeEditor.editableText))
@@ -151,7 +154,7 @@ class SourceEditorActivity : OpenSaveActivity() {
 
     private fun tryCompile(): Boolean {
         try {
-            FractlangProgram(sourceCode, selectedParameters)
+            FractlangProgram(value, selectedParameters)
             Toast.makeText(this, getString(R.string.successfullyCompiled), Toast.LENGTH_SHORT).show()
             return true
         } catch(e: ParserLookaheadException) {
@@ -172,7 +175,7 @@ class SourceEditorActivity : OpenSaveActivity() {
     inner class ChangesTextWatcher: TextWatcher {
         override fun afterTextChanged(editable: Editable) {
             syntaxUpdater.tick()
-            contentChanged()
+            storageEditor.notifyValueModified()
         }
 
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
@@ -180,8 +183,11 @@ class SourceEditorActivity : OpenSaveActivity() {
     }
 
     companion object {
+        const val directoryName = "dev"
         const val sourceKey = "source"
         const val parametersKey = "parameters"
+
+        private const val openRequestCode = 4792
 
         fun toBundle(map: Map<String, String>): Bundle {
             val bundle = Bundle()

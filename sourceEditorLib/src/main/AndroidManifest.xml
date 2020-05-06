@@ -4,5 +4,6 @@
     <application>
         <activity
             android:name=".SourceEditorActivity"/>
+        <activity android:name=".storage.SourceEditorStorageManageActivity" />
     </application>
 </manifest>
