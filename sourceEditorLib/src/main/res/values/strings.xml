@@ -15,4 +15,5 @@
     <string name="resetParameters">Reset Parameters</string>
     <string name="successfullyCompiled">Program was compiled successfully</string>
     <string name="untitled">(untitled)</string>
+    <string name="lastModified">last modified: %s</string>
 </resources>

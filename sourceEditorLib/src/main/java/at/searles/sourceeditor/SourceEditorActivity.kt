@@ -47,6 +47,7 @@ class SourceEditorActivity : StorageEditorCallback<String>, AppCompatActivity() 
         findViewById<Toolbar>(R.id.toolbar)
     }
 
+    override lateinit var storageProvider: StorageProvider
     override lateinit var storageEditor: StorageEditor<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,7 +60,8 @@ class SourceEditorActivity : StorageEditorCallback<String>, AppCompatActivity() 
             value = intent.getStringExtra(sourceKey)!!
         }
 
-        storageEditor = SourceEditorStorageEditor(this, StorageProvider(directoryName, this), this)
+        storageProvider = StorageProvider(directoryName, this)
+        storageEditor = SourceEditorStorageEditor(this, storageProvider, this)
         storageEditor.onRestoreInstanceState(savedInstanceState)
 
         parameters = toStringMap(intent.getBundleExtra(parametersKey)!!)

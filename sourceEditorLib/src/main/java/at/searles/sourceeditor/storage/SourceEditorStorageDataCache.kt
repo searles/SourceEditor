@@ -19,6 +19,6 @@ class SourceEditorStorageDataCache(private val context: Context, private val sto
 
     override fun loadDescription(name: String): String {
         val file = storageProvider.findPathEntry(name) ?: return ""
-        return "last modified: ${dateFormat.format(Date(file.lastModified()))}"
+        return context.getString(R.string.lastModified, dateFormat.format(Date(file.lastModified())))
     }
 }
