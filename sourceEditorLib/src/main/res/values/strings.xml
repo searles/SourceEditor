@@ -1,19 +1,15 @@
 <resources>
     <string name="app_name">SourceEditor</string>
-    <string name="saveLabel">Save</string>
+    <string name="saveAs">Save as</string>
+    <string name="save">Save</string>
     <string name="open">Open</string>
     <string name="filename">Filename</string>
     <string name="editor">Editor</string>
-    <string name="title_activity_main2">Main2Activity</string>
-    <string name="title_syntax_editor_activity">Fractlang Editor</string>
     <string name="compile">Compile</string>
     <string name="format">Format</string>
     <string name="returnProgram">Return</string>
-    <string name="returnWithoutSavingQuestion">Return program without saving?</string>
-    <string name="cancelWithoutSavingQuestion">Close without saving?</string>
-    <string name="openSourceFileTitle">Open Source File</string>
     <string name="resetParameters">Reset Parameters</string>
     <string name="successfullyCompiled">Program was compiled successfully</string>
     <string name="untitled">(untitled)</string>
-    <string name="lastModified">last modified: %s</string>
+    <string name="lastModifiedOnX">last modified: %s</string>
 </resources>
