@@ -1,5 +1,7 @@
 package at.searles.sourceeditor
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import at.searles.android.storage.StorageEditor
 import at.searles.android.storage.StorageEditorCallback
+import at.searles.android.storage.StorageManagerActivity
 import at.searles.android.storage.data.StorageProvider
 import at.searles.fractlang.FractlangProgram
 import at.searles.fractlang.extensions.FractlangObserver
@@ -134,6 +137,14 @@ class SourceEditorActivity : StorageEditorCallback<String>, AppCompatActivity() 
                 resetParametersMenuItem.isChecked = !resetParametersMenuItem.isChecked
                 true
             }
+            R.id.saveAction -> {
+                storageEditor.onSave()
+                true
+            }
+            R.id.saveAsAction -> {
+                storageEditor.onSaveAs()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -148,6 +159,17 @@ class SourceEditorActivity : StorageEditorCallback<String>, AppCompatActivity() 
             getString(R.string.untitled)
 
         saveMenuItem.isEnabled = isModified && name != null
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
+
+        if(requestCode == openRequestCode) {
+            if(resultCode == Activity.RESULT_OK) {
+                val name = intent!!.getStringExtra(StorageManagerActivity.nameKey)!!
+                storageEditor.open(name)
+            }
+        }
     }
 
     private fun formatCode() {
